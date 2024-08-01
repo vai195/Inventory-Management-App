@@ -1,5 +1,8 @@
 # Inventory Management Application
 
+## Deployed Application 
+[Link!](https://inventory-management-app-vs.vercel.app/)
+
 ## About
 
 This project is a inventory management application that allows users to keep track of inventory items by adding or removing items and updating their quantities. The project uses Next.js as the frontend framework, Shadcn UI for the UI components, and Firebase as the backend service.
