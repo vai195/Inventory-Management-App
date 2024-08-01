@@ -2,6 +2,7 @@
 
 ## Deployed Application 
 [Link!](https://inventory-management-app-vs.vercel.app/)
+Please be respectful and understand this is public website do not input anything inappropriate
 
 ## About
 
