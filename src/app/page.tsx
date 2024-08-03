@@ -9,6 +9,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  onSnapshot,
   query,
   setDoc,
   updateDoc,
@@ -26,68 +27,60 @@ import {
 import AddItemDialog from "@/components/addItemDialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import { addItem, createRecipe } from "./actions";
+import Chatbox from "@/components/Chatbox";
 
-type InventoryItem = {
+export interface InventoryItem {
   name: string;
   quantity?: number;
-};
+}
 
 export default function Home() {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
-  // const [item, setItem] = useState("");
+  const [recipe, setRecipe] = useState<string>("");
 
-  const updateInventory = async () => {
+  const updateInventory = (cb: any) => {
     const q = query(collection(firestore, "inventory"));
-    const querySnapshot = await getDocs(q);
-    const inventoryL: InventoryItem[] = [];
-    querySnapshot.forEach((doc) => {
-      inventoryL.push({ name: doc.id, ...doc.data() });
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const results = querySnapshot.docs.map((doc) => {
+        return { name: doc.id, ...doc.data() };
+      });
+      cb(results);
     });
-    setInventory(inventoryL);
-    //console.log(inventory);
+    return unsubscribe;
   };
 
   const removeItem = async (item: InventoryItem) => {
     const docRef = doc(collection(firestore, "inventory"), item.name);
-    // const docRef = doc(firestore, "inventory", item);
+
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       const { quantity } = docSnap.data();
       if (quantity === 1) {
         await deleteDoc(docRef);
+        toast({
+          title: "Item removed",
+          description: "The item has been removed from your inventory.",
+        });
       } else {
         await updateDoc(docRef, { quantity: quantity - 1 });
       }
     }
-    toast({
-      title: "Item removed",
-      description: "The item has been removed from your inventory.",
-    });
-    await updateInventory();
-  };
-
-  const addItem = async (item: string) => {
-    const docRef = doc(firestore, "inventory", item);
-    // const docRef = doc(firestore, "inventory", item);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      const { quantity } = docSnap.data();
-      await updateDoc(docRef, { quantity: quantity + 1 });
-    } else {
-      await setDoc(docRef, { quantity: 1 });
-    }
-    toast({
-      title: "Item added",
-      description: "The item has been added to your inventory.",
-    });
-    await updateInventory();
   };
 
   const searchItem = async (item: string) => {
+    if (item === "") {
+      toast({
+        title: "Item not found",
+        description: "The item you are looking for does not exist.",
+        variant: "destructive",
+      });
+      return;
+    }
     const docRef = doc(firestore, "inventory", item);
-    // const docRef = doc(firestore, "inventory", item);
+
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       setInventory([{ name: item, ...docSnap.data() }]);
@@ -98,31 +91,27 @@ export default function Home() {
         description: "The item you are looking for does not exist.",
         variant: "destructive",
       });
-      await updateInventory();
+
       setSearch("");
     }
   };
 
   useEffect(() => {
-    updateInventory();
-  }, [open]);
-
-  // const handleOpen = () => {
-  //   setOpen(true);
-  // };
-  // const handleClose = () => {
-  //   setOpen(false);
-  // };
+    const unsubscribe = updateInventory((data: any) => {
+      setInventory(data);
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
-    <main className='flex flex-col h-screen justify-center items-center gap-8 p-4  m-auto'>
+    <main className='flex flex-col justify-center items-center gap-8 p-4  m-auto'>
       <h1 className='text-3xl font-semibold'>Inventory Management</h1>
       <Button onClick={() => setOpen(true)}>Add Item</Button>
       <div className='flex gap-2'>
         <Input value={search} onChange={(e) => setSearch(e.target.value)} />
         <Button onClick={() => searchItem(search)}>Search</Button>
       </div>
-      <div className='max-h-[500px] overflow-y-auto'>
+      <div className='h-[250px] mt-3 px-3 overflow-y-auto'>
         <Table>
           <TableHeader>
             <TableRow>
@@ -151,6 +140,8 @@ export default function Home() {
       </div>
 
       <AddItemDialog open={open} setOpen={setOpen} />
+
+      <Chatbox items={inventory} />
     </main>
   );
 }
