@@ -12,5 +12,6 @@ This project is a inventory management application that allows users to keep tra
 
 - Next.js
 - Firebase
+- OpenRouter API with llama 3 llm
 - Tailwind CSS
 - Shadcn UI Library
