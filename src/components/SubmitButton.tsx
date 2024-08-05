@@ -8,7 +8,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <Button type='submit' disabled={pending}>
-      Add {pending && <Loader2 />}
+      Add {pending && <Loader2 className='animate-spin' />}
     </Button>
   );
 }

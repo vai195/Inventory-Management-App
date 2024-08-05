@@ -39,7 +39,16 @@ export default function Home() {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
-
+  const updateInventory = (cb: any) => {
+    const q = query(collection(firestore, "inventory"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const results = querySnapshot.docs.map((doc) => {
+        return { name: doc.id, ...doc.data() };
+      });
+      cb(results);
+    });
+    return unsubscribe;
+  };
   const removeItem = async (item: InventoryItem) => {
     const docRef = doc(collection(firestore, "inventory"), item.name);
 
@@ -83,16 +92,7 @@ export default function Home() {
       setSearch("");
     }
   };
-  const updateInventory = (cb: any) => {
-    const q = query(collection(firestore, "inventory"));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const results = querySnapshot.docs.map((doc) => {
-        return { name: doc.id, ...doc.data() };
-      });
-      cb(results);
-    });
-    return unsubscribe;
-  };
+
   useEffect(() => {
     const unsubscribe = updateInventory((data: any) => {
       setInventory(data);

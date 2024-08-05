@@ -3,22 +3,11 @@ import { initializeApp } from "firebase/app";
 import { firestore } from "@/firebase";
 
 import openai from "@/lib/openai";
-import {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  getFirestore,
-} from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
 import { InventoryItem } from "./page";
 
-export async function submitItem(formData: FormData) {
-  // let app: any = await getApp();
-  // if (!app) {
-  //   return;
-  // }
-  // const firestore = getFirestore(app);
+export const submitItem = async (formData: FormData) => {
   const docRef = doc(firestore, "inventory", formData.get("name") as string);
 
   const docSnap = await getDoc(docRef);
@@ -28,14 +17,9 @@ export async function submitItem(formData: FormData) {
   } else {
     await setDoc(docRef, { quantity: 1 });
   }
-}
+};
 
 export const addItem = async (item: string) => {
-  // let app: any = await getApp();
-  // if (!app) {
-  //   return;
-  // }
-  // const firestore = getFirestore(app);
   const docRef = doc(firestore, "inventory", item);
 
   const docSnap = await getDoc(docRef);
