@@ -10,12 +10,11 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Input } from "./ui/input";
-import { firestore } from "@/firebase";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+
 import { toast } from "./ui/use-toast";
-import { addItem, submitItem } from "@/app/actions";
+import { submitItem } from "@/app/actions";
 import SubmitButton from "./SubmitButton";
 
 interface addItemDialogProps {

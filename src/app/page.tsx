@@ -27,7 +27,7 @@ import {
 import AddItemDialog from "@/components/addItemDialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { addItem, createRecipe } from "./actions";
+import { addItem } from "./actions";
 import Chatbox from "@/components/Chatbox";
 
 export interface InventoryItem {
@@ -39,7 +39,6 @@ export default function Home() {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
-  const [recipe, setRecipe] = useState<string>("");
 
   const removeItem = async (item: InventoryItem) => {
     const docRef = doc(collection(firestore, "inventory"), item.name);

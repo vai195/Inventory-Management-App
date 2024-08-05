@@ -1,5 +1,6 @@
 "use server";
 import { initializeApp } from "firebase/app";
+import { firestore } from "@/firebase";
 
 import openai from "@/lib/openai";
 import {
@@ -13,11 +14,11 @@ import {
 import { InventoryItem } from "./page";
 
 export async function submitItem(formData: FormData) {
-  let app: any = await getApp();
-  if (!app) {
-    return;
-  }
-  const firestore = getFirestore(app);
+  // let app: any = await getApp();
+  // if (!app) {
+  //   return;
+  // }
+  // const firestore = getFirestore(app);
   const docRef = doc(firestore, "inventory", formData.get("name") as string);
 
   const docSnap = await getDoc(docRef);
@@ -30,11 +31,11 @@ export async function submitItem(formData: FormData) {
 }
 
 export const addItem = async (item: string) => {
-  let app: any = await getApp();
-  if (!app) {
-    return;
-  }
-  const firestore = getFirestore(app);
+  // let app: any = await getApp();
+  // if (!app) {
+  //   return;
+  // }
+  // const firestore = getFirestore(app);
   const docRef = doc(firestore, "inventory", item);
 
   const docSnap = await getDoc(docRef);
@@ -72,23 +73,23 @@ export const createRecipe = async (items: InventoryItem[]) => {
   }
 };
 
-function getApp() {
-  const firebaseConfig = {
-    apiKey: process.env.FIREBASE_API,
-    authDomain: "pantry-app-f80a6.firebaseapp.com",
-    projectId: "pantry-app-f80a6",
-    storageBucket: "pantry-app-f80a6.appspot.com",
-    messagingSenderId: "237862940122",
-    appId: "1:237862940122:web:fa11fd3c9841e9920424e3",
-    measurementId: "G-6FWCPDR8S0",
-  };
+// function getApp() {
+//   const firebaseConfig = {
+//     apiKey: process.env.FIREBASE_API,
+//     authDomain: "pantry-app-f80a6.firebaseapp.com",
+//     projectId: "pantry-app-f80a6",
+//     storageBucket: "pantry-app-f80a6.appspot.com",
+//     messagingSenderId: "237862940122",
+//     appId: "1:237862940122:web:fa11fd3c9841e9920424e3",
+//     measurementId: "G-6FWCPDR8S0",
+//   };
 
-  return new Promise((resolve, reject) => {
-    try {
-      const app = initializeApp(firebaseConfig);
-      resolve(app);
-    } catch (error) {
-      reject(null);
-    }
-  });
-}
+//   return new Promise((resolve, reject) => {
+//     try {
+//       const app = initializeApp(firebaseConfig);
+//       resolve(app);
+//     } catch (error) {
+//       reject(error);
+//     }
+//   });
+// }
